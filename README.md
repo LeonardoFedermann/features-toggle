@@ -4,7 +4,7 @@ Java and Spring Boot application with a simple registration of users and feature
 ## Tasks
 Except for the first one, all tasks should have unit tests. The tasks are:
 
-- [x] **Create project:** create a spring project with JPA and hibernate and stuff configured, a Postgres database, docker file, docker compose to make it easier to test.
+- [ ] **Create project:** create a spring project with JPA and hibernate and stuff configured, a Postgres database, docker file, docker compose to make it easier to test.
 - [ ] **Create User CRUD:** email, name, password, isActive, createdBy and updatedBy and when.
 - [ ] **Create Login and authentication on endpoints:** one admin user should be added on boot; only a logged user can add other users and use all endpoints.
 - [ ] **Create feature CRUD:** name, isActive, createdBy and updatedBy and when.
