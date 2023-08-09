@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class UsersAndFeaturesToggleApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(UsersAndFeaturesToggleApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(UsersAndFeaturesToggleApplication.class, args);
+	}
 }

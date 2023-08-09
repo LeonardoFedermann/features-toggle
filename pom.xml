@@ -12,7 +12,7 @@
 	<artifactId>users-and-features-toggle</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>users-and-features-toggle</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Users and Features Toggle project</description>
 	<properties>
 		<java.version>20</java.version>
 	</properties>
