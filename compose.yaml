@@ -1,10 +1,11 @@
 services:
   mysql:
+    network_mode: "host"
     image: 'mysql:latest'
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      - 'MYSQL_DATABASE=features_toggle_api'
+      - 'MYSQL_PASSWORD=...'
+      - 'MYSQL_ROOT_PASSWORD=...'
+      - 'MYSQL_USER=leonardo'
     ports:
       - '3306'
