@@ -2,9 +2,13 @@ package com.project.featurestoggle.entities;
 
 import com.project.featurestoggle.dtos.UserCreateData;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Table(name = "users")
 @Entity(name = "user")
+@Getter
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
