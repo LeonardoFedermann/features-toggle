@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Objects;
 
 @Table(name = "users")
@@ -26,8 +28,16 @@ public class User {
     @Column(name = "created_by")
     private Long createdBy;
 
+    @Column(name = "created_when")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdWhen;
+
     @Column(name = "updated_by")
     private Long updatedBy;
+
+    @Column(name = "updated_when")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedWhen;
 
     public User(UserCreateData userCreateData) {
         this.name = userCreateData.name();
@@ -35,7 +45,9 @@ public class User {
         this.email = userCreateData.email();
         this.isActive = true;
         this.createdBy = Long.valueOf(1);
+        this.createdWhen = Date.from(Instant.now());
         this.updatedBy = Long.valueOf(1);
+        this.updatedWhen = Date.from(Instant.now());
     }
 
     public void update(UserUpdateData userUpdateData) {
@@ -50,6 +62,8 @@ public class User {
         if (!Objects.isNull(userUpdateData.password())) {
             this.password = userUpdateData.password();
         }
+
+        this.updatedWhen = Date.from(Instant.now());
 
         //TODO: update "updatedBy" property with the ID of the logged user who sent the request
     }
