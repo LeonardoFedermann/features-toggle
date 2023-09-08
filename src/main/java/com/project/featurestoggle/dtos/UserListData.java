@@ -1,6 +1,7 @@
 package com.project.featurestoggle.dtos;
 
 import com.project.featurestoggle.entities.User;
+import lombok.AllArgsConstructor;
 
 public record UserListData(
         Long id,

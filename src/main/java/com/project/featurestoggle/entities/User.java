@@ -3,6 +3,7 @@ package com.project.featurestoggle.entities;
 import com.project.featurestoggle.dtos.UserCreateData;
 import com.project.featurestoggle.dtos.UserUpdateData;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

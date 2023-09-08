@@ -1,4 +1,4 @@
-package com.project.featurestoggle.repositories;
+package com.project.featurestoggle.data;
 
 import com.project.featurestoggle.entities.User;
 import org.springframework.data.domain.Page;
