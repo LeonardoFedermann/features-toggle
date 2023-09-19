@@ -3,9 +3,12 @@ package com.project.featurestoggle.entities;
 import com.project.featurestoggle.dtos.UserCreateData;
 import com.project.featurestoggle.dtos.UserUpdateData;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
 import java.util.Date;
@@ -20,22 +23,27 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
     private String email;
     private String password;
 
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @CreatedBy
     @Column(name = "created_by")
     private Long createdBy;
 
+    @CreatedDate
     @Column(name = "created_when")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdWhen;
 
+    @LastModifiedBy
     @Column(name = "updated_by")
     private Long updatedBy;
 
+    @LastModifiedDate
     @Column(name = "updated_when")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedWhen;
@@ -69,7 +77,11 @@ public class User {
         //TODO: update "updatedBy" property with the ID of the logged user who sent the request
     }
 
-    public void toggle() {
-        this.isActive = !this.isActive;
+    public void activate() {
+        this.isActive = true;
+    }
+
+    public void deactivate() {
+        this.isActive = false;
     }
 }

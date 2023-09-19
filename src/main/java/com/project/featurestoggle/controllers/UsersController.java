@@ -3,6 +3,7 @@ package com.project.featurestoggle.controllers;
 import com.project.featurestoggle.dtos.*;
 import com.project.featurestoggle.data.UserRepository;
 import com.project.featurestoggle.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,7 @@ public class UsersController {
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public UserDetailData create(@RequestBody UserCreateData userCreateData) {
+    public UserDetailData create(@RequestBody @Valid UserCreateData userCreateData) {
         return userService.create(userCreateData);
     }
 
@@ -43,7 +44,7 @@ public class UsersController {
     @ResponseStatus(value = HttpStatus.OK)
     public UserDetailData update(
             @PathVariable Long id,
-            @RequestBody UserUpdateData userUpdateData
+            @RequestBody @Valid UserUpdateData userUpdateData
     ) {
         return userService.update(id, userUpdateData);
     }
@@ -54,10 +55,17 @@ public class UsersController {
         userService.delete(id);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/activate/{id}")
     @Transactional
     @ResponseStatus(value = HttpStatus.OK)
-    public UserToggleData toggle(@PathVariable Long id) {
-        return userService.toggle(id);
+    public UserActivatieAndDeactivatieData activate(@PathVariable Long id) {
+        return userService.activate(id);
+    }
+
+    @PatchMapping("/deactivate/{id}")
+    @Transactional
+    @ResponseStatus(value = HttpStatus.OK)
+    public UserActivatieAndDeactivatieData deactivate(@PathVariable Long id) {
+        return userService.deactivate(id);
     }
 }

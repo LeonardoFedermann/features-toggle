@@ -31,7 +31,8 @@ public class UserService {
 
     public UserDetailData update(Long id, UserUpdateData userUpdateData) {
         User user = userRepository.getReferenceById(id);
-        //TODO: update "updatedBy" property with the ID of the logged user who sent the request
+        // TODO: update "updatedBy" property with the ID of the logged user who sent the request
+        // TODO: allow user update only if the current logged user is the same one or if it is a privileged one.
         user.update(userUpdateData);
         return new UserDetailData(user);
     }
@@ -40,9 +41,15 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public UserToggleData toggle(Long id) {
+    public UserActivatieAndDeactivatieData activate(Long id) {
         User user = userRepository.getReferenceById(id);
-        user.toggle();
-        return new UserToggleData(user);
+        user.activate();
+        return new UserActivatieAndDeactivatieData(user);
+    }
+
+    public UserActivatieAndDeactivatieData deactivate(Long id) {
+        User user = userRepository.getReferenceById(id);
+        user.deactivate();
+        return new UserActivatieAndDeactivatieData(user);
     }
 }
