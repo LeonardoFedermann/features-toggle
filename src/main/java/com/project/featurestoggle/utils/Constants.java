@@ -5,4 +5,5 @@ public class Constants {
     public static final int EMAIL_LIMIT_OF_CHARACTERS = 320;
     public static final int NAME_LIMIT_OF_CHARACTERS = 40;
     public static final int NAME_MINIMUM_CHARACTERS = 3;
+    public static final String USER_NOT_FOUND_MESSAGE = "User not found";
 }

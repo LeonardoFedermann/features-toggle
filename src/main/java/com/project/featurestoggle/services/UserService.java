@@ -3,6 +3,9 @@ package com.project.featurestoggle.services;
 import com.project.featurestoggle.data.UserRepository;
 import com.project.featurestoggle.dtos.*;
 import com.project.featurestoggle.entities.User;
+import com.project.featurestoggle.exceptions.NotFoundException;
+import com.project.featurestoggle.utils.Constants;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +21,9 @@ public class UserService {
     }
 
     public UserDetailData detail(Long id) {
-        User user = userRepository.getReferenceById(id);
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(Constants.USER_NOT_FOUND_MESSAGE)
+        );
         return new UserDetailData(user);
     }
 
@@ -30,7 +35,9 @@ public class UserService {
     }
 
     public UserDetailData update(Long id, UserUpdateData userUpdateData) {
-        User user = userRepository.getReferenceById(id);
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(Constants.USER_NOT_FOUND_MESSAGE)
+        );
         // TODO: update "updatedBy" property with the ID of the logged user who sent the request
         // TODO: allow user update only if the current logged user is the same one or if it is a privileged one.
         user.update(userUpdateData);
@@ -38,17 +45,24 @@ public class UserService {
     }
 
     public void delete(Long id) {
+        userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(Constants.USER_NOT_FOUND_MESSAGE)
+        );
         userRepository.deleteById(id);
     }
 
     public UserActivatieAndDeactivatieData activate(Long id) {
-        User user = userRepository.getReferenceById(id);
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(Constants.USER_NOT_FOUND_MESSAGE)
+        );
         user.activate();
         return new UserActivatieAndDeactivatieData(user);
     }
 
     public UserActivatieAndDeactivatieData deactivate(Long id) {
-        User user = userRepository.getReferenceById(id);
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(Constants.USER_NOT_FOUND_MESSAGE)
+        );
         user.deactivate();
         return new UserActivatieAndDeactivatieData(user);
     }
