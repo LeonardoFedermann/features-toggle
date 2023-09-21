@@ -4,8 +4,8 @@ services:
     image: 'mysql:latest'
     environment:
       - 'MYSQL_DATABASE=features_toggle_api'
-      - 'MYSQL_PASSWORD=iamtheboss$1492'
-      - 'MYSQL_ROOT_PASSWORD=iamtheboss$1492'
+      - 'MYSQL_PASSWORD=...'
+      - 'MYSQL_ROOT_PASSWORD=...'
       - 'MYSQL_USER=leonardo'
     ports:
       - '3306'
