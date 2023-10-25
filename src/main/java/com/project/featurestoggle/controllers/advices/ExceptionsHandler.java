@@ -2,7 +2,6 @@ package com.project.featurestoggle.controllers.advices;
 
 import com.project.featurestoggle.dtos.ValidationErrorData;
 import com.project.featurestoggle.exceptions.NotFoundException;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;

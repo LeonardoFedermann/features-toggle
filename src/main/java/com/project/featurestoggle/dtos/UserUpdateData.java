@@ -7,14 +7,24 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record UserUpdateData(
-        @Size(min = Constants.NAME_MINIMUM_CHARACTERS, max = Constants.NAME_LIMIT_OF_CHARACTERS)
+        @Size(
+                min = Constants.NAME_MINIMUM_CHARACTERS,
+                max = Constants.NAME_LIMIT_OF_CHARACTERS,
+                message = "{name.size}"
+        )
         String name,
 
-        @Email
-        @Size(max = Constants.EMAIL_LIMIT_OF_CHARACTERS)
+        @Email(message = "{email.format}")
+        @Size(
+                max = Constants.EMAIL_LIMIT_OF_CHARACTERS,
+                message = "{email.size}"
+        )
         String email,
 
-        @Pattern(regexp = Constants.PASSWORD_FORMAT_REGEX)
+        @Pattern(
+                regexp = Constants.PASSWORD_FORMAT_REGEX,
+                message = "{password.pattern}"
+        )
         String password
 ) {
 }
