@@ -5,7 +5,6 @@ import com.project.featurestoggle.dtos.*;
 import com.project.featurestoggle.entities.User;
 import com.project.featurestoggle.exceptions.NotFoundException;
 import com.project.featurestoggle.utils.Constants;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
