@@ -1,4 +1,4 @@
-package com.project.featurestoggle.entities;
+package com.project.featurestoggle.domains;
 
 import com.project.featurestoggle.dtos.UserCreateData;
 import com.project.featurestoggle.dtos.UserUpdateData;

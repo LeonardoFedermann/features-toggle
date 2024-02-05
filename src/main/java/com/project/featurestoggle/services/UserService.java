@@ -2,7 +2,7 @@ package com.project.featurestoggle.services;
 
 import com.project.featurestoggle.data.UserRepository;
 import com.project.featurestoggle.dtos.*;
-import com.project.featurestoggle.entities.User;
+import com.project.featurestoggle.domains.User;
 import com.project.featurestoggle.exceptions.NotFoundException;
 import com.project.featurestoggle.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;

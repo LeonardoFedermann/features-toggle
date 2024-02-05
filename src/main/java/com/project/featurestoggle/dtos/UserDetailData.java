@@ -1,7 +1,6 @@
 package com.project.featurestoggle.dtos;
 
-import com.project.featurestoggle.entities.User;
-import lombok.AllArgsConstructor;
+import com.project.featurestoggle.domains.User;
 
 import java.util.Date;
 

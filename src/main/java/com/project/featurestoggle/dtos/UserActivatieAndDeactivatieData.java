@@ -1,6 +1,6 @@
 package com.project.featurestoggle.dtos;
 
-import com.project.featurestoggle.entities.User;
+import com.project.featurestoggle.domains.User;
 
 public record UserActivatieAndDeactivatieData(
         Long id,

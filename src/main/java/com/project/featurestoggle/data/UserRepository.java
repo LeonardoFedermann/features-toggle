@@ -1,6 +1,6 @@
 package com.project.featurestoggle.data;
 
-import com.project.featurestoggle.entities.User;
+import com.project.featurestoggle.domains.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -17,10 +17,6 @@ public record UserCreateData(
 
         @NotBlank(message = "{email.mandatory}")
         @Email(message = "{email.format}")
-        @Size(
-                max = Constants.EMAIL_LIMIT_OF_CHARACTERS,
-                message = "{email.size}"
-        )
         String email,
 
         @NotBlank(message = "{password.mandatory}")
