@@ -50,19 +50,19 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public UserActivatieAndDeactivatieData activate(Long id) {
+    public UserActivateAndDeactivatieData activate(Long id) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(Constants.USER_NOT_FOUND_MESSAGE)
         );
         user.activate();
-        return new UserActivatieAndDeactivatieData(user);
+        return new UserActivateAndDeactivatieData(user);
     }
 
-    public UserActivatieAndDeactivatieData deactivate(Long id) {
+    public UserActivateAndDeactivatieData deactivate(Long id) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(Constants.USER_NOT_FOUND_MESSAGE)
         );
         user.deactivate();
-        return new UserActivatieAndDeactivatieData(user);
+        return new UserActivateAndDeactivatieData(user);
     }
 }

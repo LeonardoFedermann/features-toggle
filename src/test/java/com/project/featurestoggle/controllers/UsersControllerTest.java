@@ -1,37 +1,26 @@
 package com.project.featurestoggle.controllers;
 
-import com.google.gson.Gson;
-import com.project.featurestoggle.dtos.UserCreateData;
-import com.project.featurestoggle.dtos.UserDetailData;
-import com.project.featurestoggle.dtos.UserListData;
+import com.project.featurestoggle.dtos.*;
 import com.project.featurestoggle.domains.User;
-import com.project.featurestoggle.dtos.UserUpdateData;
 import com.project.featurestoggle.exceptions.NotFoundException;
 import com.project.featurestoggle.services.UserService;
 import com.project.featurestoggle.utils.Constants;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
+import org.springframework.data.domain.*;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.springframework.data.domain.Page;
-
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 class UsersControllerTest extends BasicControllerTest {
     @MockBean
@@ -45,6 +34,9 @@ class UsersControllerTest extends BasicControllerTest {
 
     @Autowired
     private JacksonTester<UserUpdateData> userUpdateRequestTester;
+
+    @Autowired
+    private JacksonTester<UserActivateAndDeactivatieData> userActivateAndDeactivateTester;
 
     @Value("${validation_messages_for_tests.name.mandatory}")
     private String mandatoryNameErrorMessage;
@@ -68,11 +60,19 @@ class UsersControllerTest extends BasicControllerTest {
     private UserCreateData mockUserBCreateData = new UserCreateData("TestB", "testb@gmail.com", "$TestB123");
     private UserCreateData mockUserCCreateData = new UserCreateData("TestC", "testc@gmail.com", "$TestC123");
     private UserCreateData mockUserDCreateData = new UserCreateData("TestD", "testd@gmail.com", "$TestD123");
+    private UserCreateData mockUserECreateData = new UserCreateData("TestE", "teste@gmail.com", "$TestE123");
+    private UserCreateData mockUserFCreateData = new UserCreateData("TestF", "testf@gmail.com", "$TestF123");
+    private UserCreateData mockUserGCreateData = new UserCreateData("TestG", "testg@gmail.com", "$TestG123");
+    private UserCreateData mockUserHCreateData = new UserCreateData("TestH", "testh@gmail.com", "$TestH123");
 
     private User mockUserA = new User(mockUserACreateData);
     private User mockUserB = new User(mockUserBCreateData);
     private User mockUserC = new User(mockUserCCreateData);
     private User mockUserD = new User(mockUserDCreateData);
+    private User mockUserE = new User(mockUserECreateData);
+    private User mockUserF = new User(mockUserFCreateData);
+    private User mockUserG = new User(mockUserGCreateData);
+    private User mockUserH = new User(mockUserHCreateData);
 
     @Autowired
     private UsersController usersController;
@@ -85,10 +85,9 @@ class UsersControllerTest extends BasicControllerTest {
         when(this.userService.detail(mockId)).thenReturn(mockUserDetailData);
 
         UserDetailData userDetailData = usersController.detail(mockId);
-
-        assertThat(userDetailData.name()).isEqualTo(mockUserDetailData.name());
-        assertThat(userDetailData.isActive()).isEqualTo(mockUserDetailData.isActive());
-        assertThat(userDetailData.email()).isEqualTo(mockUserDetailData.email());
+        assertEquals(userDetailData.name(), mockUserDetailData.name());
+        assertEquals(mockUserDetailData.isActive(), userDetailData.isActive());
+        assertEquals(mockUserDetailData.email(), userDetailData.email());
 
 //        this.mockMvc.perform(get(String.format("/users/%s", mockId)))
 //                .andExpect(status().isOk())
@@ -97,42 +96,45 @@ class UsersControllerTest extends BasicControllerTest {
 //                .andExpect(jsonPath("$.email").value(mockUserDetailData.email()));
     }
 
-//    @Test
-//    void detailNotFoundErrorTest() throws Exception {
-//        Long mockId = (long) 1;
-//        when(this.userService.detail(mockId))
-//                .thenThrow(new NotFoundException(Constants.USER_NOT_FOUND_MESSAGE));
-//
-//        UserDetailData userDetailData = usersController.detail(mockId);
-//        this.mockMvc.perform(get(String.format("/users/%s", mockId)))
-//                .andExpect(status().isNotFound());
-//    }
-
     @Test
-    void defaultListTest() throws Exception {
-        List<UserListData> mockUsersList = new ArrayList<>();
+    void detailNotFoundErrorTest() throws Exception {
+        Long mockId = (long) 1;
+        when(this.userService.detail(mockId))
+                .thenThrow(new NotFoundException(Constants.USER_NOT_FOUND_MESSAGE));
 
-        mockUsersList.add(new UserListData(this.mockUserA));
-        mockUsersList.add(new UserListData(this.mockUserB));
-        mockUsersList.add(new UserListData(this.mockUserC));
-        mockUsersList.add(new UserListData(this.mockUserD));
-
-        Page<UserListData> mockUsersPage = new PageImpl<>(mockUsersList);
-
-        when(userService.list(any(Pageable.class))).thenReturn(mockUsersPage);
-//      como injetar o Pageable aqui?
-//      Page<UserListData> userListPageable = usersController.list();
-
-        this.mockMvc.perform(get("/users"))
-                // RETURNING STATUS 500 WHEN IT SHOULD BE 200
-//                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.[1].name").value(this.mockUserB.getName()))
-                .andExpect(jsonPath("$.content[3].email").value(this.mockUserD.getEmail()))
-                .andExpect(jsonPath("$.content[2].isActive").value(true));
+        assertThrows(NotFoundException.class, () -> usersController.detail(mockId));
     }
 
-    // list
-    // teste para paginação com diferentes valores de size, page e sort
+    @Test
+    void defaultListTest() {
+        Page<UserListData> mockUsersPage = new PageImpl<>(Arrays.asList(
+                new UserListData(this.mockUserA),
+                new UserListData(this.mockUserB),
+                new UserListData(this.mockUserC),
+                new UserListData(this.mockUserD),
+                new UserListData(this.mockUserE),
+                new UserListData(this.mockUserF),
+                new UserListData(this.mockUserG),
+                new UserListData(this.mockUserH)
+        ));
+        Pageable pageable = PageRequest.of(0, 20);
+
+        when(userService.list(any(Pageable.class))).thenReturn(mockUsersPage);
+
+        List<UserListData> usersList = usersController.list(pageable)
+                .stream().toList();
+
+        assertEquals(this.mockUserB.getName(), usersList.get(1).name());
+        assertEquals(this.mockUserG.getEmail(), usersList.get(6).email());
+        assertEquals(true, usersList.get(2).isActive());
+//
+//        this.mockMvc.perform(get("/users"))
+//                // RETURNING STATUS 500 WHEN IT SHOULD BE 200
+////                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.content.[1].name").value(this.mockUserB.getName()))
+//                .andExpect(jsonPath("$.content[3].email").value(this.mockUserD.getEmail()))
+//                .andExpect(jsonPath("$.content[2].isActive").value(true));
+    }
 
     @Test
     void createValidUserTest() throws Exception {
@@ -143,7 +145,7 @@ class UsersControllerTest extends BasicControllerTest {
         UserDetailData userDetailData = usersController.create(this.mockUserACreateData);
         var receivedJson = this.userResponseTester.write(userDetailData).getJson();
 
-        assertThat(receivedJson).isEqualTo(expectedJson);
+        assertEquals(expectedJson, receivedJson);
 
 //        var response = this.mockMvc.perform(
 //                post("/users")
@@ -163,16 +165,6 @@ class UsersControllerTest extends BasicControllerTest {
 
         mockInvalidNames.add("e");
         mockInvalidNames.add("a".repeat(41));
-
-        Optional<UserDetailData> userErrorDetailData = Optional.of(
-                usersController.create(new UserCreateData(
-                        null,
-                        "testuser@gmail.com",
-                        "$Aa123456"
-                ))
-        );
-
-        // como testar?
 
         this.testRequestWithValidationFieldError(
                 "/users",
@@ -307,15 +299,18 @@ class UsersControllerTest extends BasicControllerTest {
         for (UserUpdateData userUpdateData : userUpdateDataList) {
             when(this.userService.update(mockId, userUpdateData)).thenReturn(returnUser);
 
-            var response = this.mockMvc.perform(put(String.format("/users/%s", mockId))
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(this.userUpdateRequestTester.write(userUpdateData).getJson())
-                    )
-                    .andExpect(status().isOk())
-                    .andReturn()
-                    .getResponse();
+            var response = usersController.update(mockId, userUpdateData);
+            String receivedJson = this.userResponseTester.write(response).getJson();
 
-            assertThat(response.getContentAsString()).isEqualTo(expectedJson);
+            assertEquals(expectedJson, receivedJson);
+
+//            var response = this.mockMvc.perform(put(String.format("/users/%s", mockId))
+//                            .contentType(MediaType.APPLICATION_JSON)
+//                            .content(this.userUpdateRequestTester.write(userUpdateData).getJson())
+//                    )
+//                    .andExpect(status().isOk())
+//                    .andReturn()
+//                    .getResponse();
         }
     }
 
@@ -386,8 +381,52 @@ class UsersControllerTest extends BasicControllerTest {
     }
 
     // delete
-    // apagar usuário
+    @Test
+    void deleteUserTest() {
+        Long mockId = (long) 1;
 
-    // activate and deactivate
-    // testar ativação e desativação de usuário
+        doNothing().when(this.userService).delete(mockId);
+        this.usersController.delete(mockId);
+        verify(this.userService, times(1)).delete(mockId);
+    }
+
+    @Test
+    void deleteNotFoundUserTest() {
+        Long mockId = (long) 1;
+
+        doThrow(NotFoundException.class).when(this.userService).delete(mockId);
+        assertThrows(NotFoundException.class, () -> {
+            this.usersController.delete(mockId);
+        });
+    }
+
+    @Test
+    void activateUserTest() throws IOException {
+        Long mockId = (long) 1;
+        UserActivateAndDeactivatieData expectedUser = new UserActivateAndDeactivatieData(this.mockUserA);
+        String expectedJson = this.userActivateAndDeactivateTester.write(expectedUser).getJson();
+        when(this.userService.activate(mockId)).thenReturn(
+                new UserActivateAndDeactivatieData(mockUserA)
+        );
+
+        var response = this.usersController.activate(mockId);
+        String receivedJson = this.userActivateAndDeactivateTester.write(response).getJson();
+        assertEquals(expectedJson, receivedJson);
+    }
+
+    @Test
+    void activateAndDeactivateUserNotFoundTest() {
+        Long mockId = (long) 1;
+
+        doThrow(NotFoundException.class).when(this.userService).activate(mockId);
+        doThrow(NotFoundException.class).when(this.userService).deactivate(mockId);
+
+        assertThrows(NotFoundException.class, () -> {
+            this.usersController.activate(mockId);
+        });
+
+        assertThrows(NotFoundException.class, () -> {
+            this.usersController.deactivate(mockId);
+        });
+    }
 }

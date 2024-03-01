@@ -1,13 +1,3 @@
 server:
   error:
     include-stacktrace: never
-validation_messages_for_tests:
-  name:
-    mandatory: Name field is mandatory.
-    size: Name must have between 3 and 40 characters.
-  email:
-    mandatory: Email field is mandatory.
-    format: Email must be in the proper format. Make sure you included @.
-  password:
-    mandatory: Password field is mandatory.
-    pattern: Password must have between 5 and 20 characters and at least one digit, one uppercase letter, one lowercase letter and one special character.

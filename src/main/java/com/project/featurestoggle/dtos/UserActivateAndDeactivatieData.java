@@ -2,12 +2,12 @@ package com.project.featurestoggle.dtos;
 
 import com.project.featurestoggle.domains.User;
 
-public record UserActivatieAndDeactivatieData(
+public record UserActivateAndDeactivatieData(
         Long id,
         String name,
         Boolean isActive
 ) {
-    public UserActivatieAndDeactivatieData(User user) {
+    public UserActivateAndDeactivatieData(User user) {
         this(user.getId(), user.getName(), user.getIsActive());
     }
 }

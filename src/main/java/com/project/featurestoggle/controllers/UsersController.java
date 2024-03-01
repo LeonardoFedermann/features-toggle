@@ -55,14 +55,14 @@ public class UsersController {
     @PatchMapping("/activate/{id}")
     @Transactional
     @ResponseStatus(value = HttpStatus.OK)
-    public UserActivatieAndDeactivatieData activate(@PathVariable Long id) {
+    public UserActivateAndDeactivatieData activate(@PathVariable Long id) {
         return userService.activate(id);
     }
 
     @PatchMapping("/deactivate/{id}")
     @Transactional
     @ResponseStatus(value = HttpStatus.OK)
-    public UserActivatieAndDeactivatieData deactivate(@PathVariable Long id) {
+    public UserActivateAndDeactivatieData deactivate(@PathVariable Long id) {
         return userService.deactivate(id);
     }
 }

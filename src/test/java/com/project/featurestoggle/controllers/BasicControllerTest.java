@@ -35,8 +35,4 @@ public class BasicControllerTest {
                 .andExpect(jsonPath("$.[0].field").value(field))
                 .andExpect(jsonPath("$.[0].message").value(errorMessage));
     }
-
-    protected void requestWithValidationFieldErrorTests(){
-
-    }
 }
