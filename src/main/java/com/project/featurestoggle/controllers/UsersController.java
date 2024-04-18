@@ -1,7 +1,6 @@
 package com.project.featurestoggle.controllers;
 
 import com.project.featurestoggle.dtos.*;
-import com.project.featurestoggle.data.UserRepository;
 import com.project.featurestoggle.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

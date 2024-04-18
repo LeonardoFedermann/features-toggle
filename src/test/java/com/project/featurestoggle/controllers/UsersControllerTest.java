@@ -106,7 +106,7 @@ class UsersControllerTest extends BasicControllerTest {
     }
 
     @Test
-    void defaultListTest() {
+    void listTest() {
         Page<UserListData> mockUsersPage = new PageImpl<>(Arrays.asList(
                 new UserListData(this.mockUserA),
                 new UserListData(this.mockUserB),
