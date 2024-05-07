@@ -4,6 +4,7 @@ services:
     image: 'mysql:latest'
     environment:
       - 'MYSQL_DATABASE=features_toggle_api'
+      # tirar sinal de $ da senha
       - 'MYSQL_PASSWORD='
       - 'MYSQL_ROOT_PASSWORD='
       - 'MYSQL_USER=leonardo'

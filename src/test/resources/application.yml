@@ -1,3 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/features_toggle_api_tests
+    username: leonardo
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
 validation_messages_for_tests:
   name:
     mandatory: Name field is mandatory.
