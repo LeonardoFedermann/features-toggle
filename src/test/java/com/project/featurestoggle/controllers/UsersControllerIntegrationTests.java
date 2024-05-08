@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.featurestoggle.FeaturesToggleApplication;
 import com.project.featurestoggle.data.UserRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.project.featurestoggle.dtos.*;
@@ -17,8 +19,11 @@ import com.project.featurestoggle.services.UserService;
 import com.project.featurestoggle.utils.Constants;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -79,12 +84,19 @@ public class UsersControllerIntegrationTests extends BasicControllerTest {
     private User mockUserG = new User(mockUserGCreateData);
     private User mockUserH = new User(mockUserHCreateData);
 
+    private List<UserCreateData> usersCreateDataList = new ArrayList<>();
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    private Long insertUserToDatabaseAndGetId(UserCreateData userCreateData) {
+    private User insertUserToDatabase(UserCreateData userCreateData) {
         User user = new User(userCreateData);
         userRepository.save(user);
 
+        return user;
+    }
+
+    private Long insertUserToDatabaseAndGetId(UserCreateData userCreateData) {
+        User user = insertUserToDatabase(userCreateData);
         return new UserDetailData(user).id();
     }
 
@@ -109,6 +121,42 @@ public class UsersControllerIntegrationTests extends BasicControllerTest {
     void shouldThrowNotFoundErrorWhenUserDoesNotExist() throws Exception {
         this.mockMvc.perform(get("/users/999"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldSuccessfullyFetchUsersList() throws Exception {
+        insertUserToDatabase(this.mockUserACreateData);
+        insertUserToDatabase(this.mockUserBCreateData);
+        insertUserToDatabase(this.mockUserCCreateData);
+        insertUserToDatabase(this.mockUserDCreateData);
+        insertUserToDatabase(this.mockUserECreateData);
+        insertUserToDatabase(this.mockUserFCreateData);
+        insertUserToDatabase(this.mockUserGCreateData);
+        insertUserToDatabase(this.mockUserHCreateData);
+
+        this.mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[1].name").value(this.mockUserB.getName()))
+                .andExpect(jsonPath("$.content[3].email").value(this.mockUserD.getEmail()))
+                .andExpect(jsonPath("$.content[2].isActive").value(true))
+                .andExpect(jsonPath("$.content[6].name").value(this.mockUserG.getName()))
+                .andExpect(jsonPath("$.content[7].email").value(this.mockUserH.getEmail()));
+    }
+
+    @Test
+    void shouldSuccessfullySaveNewUser() throws Exception {
+        String requestBody = objectMapper.writeValueAsString(this.mockUserACreateData);
+
+        this.mockMvc.perform(
+                        post("/users")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.name").value(this.mockUserA.getName()))
+                .andExpect(jsonPath("$.email").value(this.mockUserA.getEmail()))
+                .andExpect(jsonPath("$.isActive").value(true))
+                .andExpect(jsonPath("$.id").isNumber());
     }
 
     @Test
@@ -227,6 +275,40 @@ public class UsersControllerIntegrationTests extends BasicControllerTest {
                             )
                     )
             );
+        }
+    }
+
+    @Test
+    void shouldSuccessfullyUpdateExistingUser() throws Exception {
+        List<UserUpdateData> userUpdateDataList = new ArrayList<>();
+        String updatedName = mockUserACreateData.name();
+        String updatedEmail = mockUserACreateData.email();
+        String updatedPassword = mockUserACreateData.password();
+
+        userUpdateDataList.add(new UserUpdateData(updatedName, null, null));
+        userUpdateDataList.add(new UserUpdateData(null, updatedEmail, null));
+        userUpdateDataList.add(new UserUpdateData(null, null, updatedPassword));
+        userUpdateDataList.add(new UserUpdateData(updatedName, updatedEmail, null));
+        userUpdateDataList.add(new UserUpdateData(updatedName, null, updatedPassword));
+        userUpdateDataList.add(new UserUpdateData(null, updatedEmail, updatedPassword));
+        userUpdateDataList.add(new UserUpdateData(updatedName, updatedEmail, updatedPassword));
+
+        for (UserUpdateData userUpdateData : userUpdateDataList) {
+            Long userId = insertUserToDatabaseAndGetId(this.mockUserBCreateData);
+
+            this.mockMvc.perform(put(String.format("/users/%s", userId))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(userUpdateData))
+                    )
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.name").value(
+                            Objects.isNull(userUpdateData.name()) ?
+                                    this.mockUserB.getName() :
+                                    userUpdateData.name()))
+                    .andExpect(jsonPath("$.email").value(
+                            Objects.isNull(userUpdateData.email()) ?
+                                    this.mockUserB.getEmail() :
+                                    userUpdateData.email()));
         }
     }
 
