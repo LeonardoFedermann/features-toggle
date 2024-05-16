@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.json.JacksonTester;
@@ -31,34 +30,13 @@ class UsersControllerTest extends BasicControllerTest {
     UserService userService;
 
     @Autowired
-    private JacksonTester<UserCreateData> userCreateRequestTester;
+    private UsersController usersController;
 
     @Autowired
     private JacksonTester<UserDetailData> userResponseTester;
 
     @Autowired
-    private JacksonTester<UserUpdateData> userUpdateRequestTester;
-
-    @Autowired
     private JacksonTester<UserActivateAndDeactivatieData> userActivateAndDeactivateTester;
-
-    @Value("${validation_messages_for_tests.name.mandatory}")
-    private String mandatoryNameErrorMessage;
-
-    @Value("${validation_messages_for_tests.name.size}")
-    private String nameSizeErrorMessage;
-
-    @Value("${validation_messages_for_tests.email.mandatory}")
-    private String mandatoryEmailErrorMessage;
-
-    @Value("${validation_messages_for_tests.email.format}")
-    private String emailFormatErrorMessage;
-
-    @Value("${validation_messages_for_tests.password.mandatory}")
-    private String mandatoryPasswordErrorMessage;
-
-    @Value("${validation_messages_for_tests.password.pattern}")
-    private String passwordPatternErrorMessage;
 
     private UserCreateData mockUserACreateData = new UserCreateData("TestA", "testa@gmail.com", "$TestA123");
     private UserCreateData mockUserBCreateData = new UserCreateData("TestB", "testb@gmail.com", "$TestB123");
@@ -78,11 +56,8 @@ class UsersControllerTest extends BasicControllerTest {
     private User mockUserG = new User(mockUserGCreateData);
     private User mockUserH = new User(mockUserHCreateData);
 
-    @Autowired
-    private UsersController usersController;
-
     @Test
-    void detailSuccessTest() {
+    void shouldSuccessfullyRunDetailEndpoint() {
         Long mockId = (long) 1;
         UserDetailData mockUserDetailData = new UserDetailData(this.mockUserA);
 
@@ -92,16 +67,10 @@ class UsersControllerTest extends BasicControllerTest {
         assertEquals(userDetailData.name(), mockUserDetailData.name());
         assertEquals(mockUserDetailData.isActive(), userDetailData.isActive());
         assertEquals(mockUserDetailData.email(), userDetailData.email());
-
-//        this.mockMvc.perform(get(String.format("/users/%s", mockId)))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.name").value(mockUserDetailData.name()))
-//                .andExpect(jsonPath("$.isActive").value(true))
-//                .andExpect(jsonPath("$.email").value(mockUserDetailData.email()));
     }
 
     @Test
-    void detailNotFoundErrorTest() throws Exception {
+    void shouldThrowNotFoundErrorForDetailEndpoint() throws Exception {
         Long mockId = (long) 1;
         when(this.userService.detail(mockId))
                 .thenThrow(new NotFoundException(Constants.USER_NOT_FOUND_MESSAGE));
@@ -110,7 +79,7 @@ class UsersControllerTest extends BasicControllerTest {
     }
 
     @Test
-    void listTest() {
+    void shouldSuccessfullyListMockUsers() {
         Page<UserListData> mockUsersPage = new PageImpl<>(Arrays.asList(
                 new UserListData(this.mockUserA),
                 new UserListData(this.mockUserB),
@@ -131,17 +100,10 @@ class UsersControllerTest extends BasicControllerTest {
         assertEquals(this.mockUserB.getName(), usersList.get(1).name());
         assertEquals(this.mockUserG.getEmail(), usersList.get(6).email());
         assertEquals(true, usersList.get(2).isActive());
-//
-//        this.mockMvc.perform(get("/users"))
-//                // RETURNING STATUS 500 WHEN IT SHOULD BE 200
-////                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.content.[1].name").value(this.mockUserB.getName()))
-//                .andExpect(jsonPath("$.content[3].email").value(this.mockUserD.getEmail()))
-//                .andExpect(jsonPath("$.content[2].isActive").value(true));
     }
 
     @Test
-    void createValidUserTest() throws Exception {
+    void shouldSuccessfullyRunCreateEndpointForMockUser() throws Exception {
         UserDetailData mockUserADetailData = new UserDetailData(this.mockUserA);
         when(userService.create(this.mockUserACreateData)).thenReturn(mockUserADetailData);
         var expectedJson = this.userResponseTester.write(mockUserADetailData).getJson();
@@ -150,140 +112,10 @@ class UsersControllerTest extends BasicControllerTest {
         var receivedJson = this.userResponseTester.write(userDetailData).getJson();
 
         assertEquals(expectedJson, receivedJson);
-
-//        var response = this.mockMvc.perform(
-//                post("/users")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(this.userCreateRequestTester
-//                                .write(this.mockUserACreateData)
-//                                .getJson()
-//                        )
-//        ).andReturn().getResponse();
-//
-//        assertThat(response.getContentAsString()).isEqualTo(expectedJson);
     }
 
     @Test
-    void createUserWithIncorrectName() throws Exception {
-        List<String> mockInvalidNames = new ArrayList<>();
-
-        mockInvalidNames.add("e");
-        mockInvalidNames.add("a".repeat(41));
-
-        this.testRequestWithValidationFieldError(
-                "/users",
-                "name",
-                this.mandatoryNameErrorMessage,
-                "POST",
-                userCreateRequestTester.write(
-                        new UserCreateData(
-                                null,
-                                "testuser@gmail.com",
-                                "$Aa123456"
-                        )
-                ).getJson()
-        );
-
-        for (String invalidName : mockInvalidNames) {
-            this.testRequestWithValidationFieldError(
-                    "/users",
-                    "name",
-                    this.nameSizeErrorMessage,
-                    "POST",
-                    userCreateRequestTester.write(
-                            new UserCreateData(
-                                    invalidName,
-                                    "testuser@gmail.com",
-                                    "$Aa123456"
-                            )
-                    ).getJson()
-            );
-        }
-    }
-
-    @Test
-    void createUserWithIncorrectEmail() throws Exception {
-        List<String> mockInvalidEmails = new ArrayList<>();
-
-        mockInvalidEmails.add(String.format("%s@gmail.com", "a".repeat(400)));
-        mockInvalidEmails.add("testemail.com");
-
-        this.testRequestWithValidationFieldError(
-                "/users",
-                "email",
-                this.mandatoryEmailErrorMessage,
-                "POST",
-                userCreateRequestTester.write(
-                        new UserCreateData(
-                                "Test User",
-                                null,
-                                "$Aa123456"
-                        )
-                ).getJson()
-        );
-
-        for (String invalidEmail : mockInvalidEmails) {
-            this.testRequestWithValidationFieldError(
-                    "/users",
-                    "email",
-                    this.emailFormatErrorMessage,
-                    "POST",
-                    userCreateRequestTester.write(
-                            new UserCreateData(
-                                    "Test User",
-                                    invalidEmail,
-                                    "$Aa123456"
-                            )
-                    ).getJson()
-            );
-        }
-    }
-
-    @Test
-    void createUserWithIncorrectPassword() throws Exception {
-        List<String> mockInvalidPasswords = new ArrayList<>();
-
-        mockInvalidPasswords.add("Aa123456");
-        mockInvalidPasswords.add("$123456");
-        mockInvalidPasswords.add("$Aabcde");
-        mockInvalidPasswords.add("$AA123456");
-        mockInvalidPasswords.add("$aa123456");
-        mockInvalidPasswords.add("$Aa1");
-        mockInvalidPasswords.add(String.format("$A%s8", "a".repeat(20)));
-
-        this.testRequestWithValidationFieldError(
-                "/users",
-                "password",
-                this.mandatoryPasswordErrorMessage,
-                "POST",
-                userCreateRequestTester.write(
-                        new UserCreateData(
-                                "Test User",
-                                "testuser@gmail.com",
-                                null
-                        )
-                ).getJson()
-        );
-
-        for (String invalidPassword : mockInvalidPasswords) {
-            this.testRequestWithValidationFieldError(
-                    "/users",
-                    "password",
-                    this.passwordPatternErrorMessage,
-                    "POST",
-                    userCreateRequestTester.write(
-                            new UserCreateData(
-                                    "Test User",
-                                    "testuser@gmail.com",
-                                    invalidPassword
-                            )
-                    ).getJson()
-            );
-        }
-    }
-
-    @Test
-    void updateSuccessTest() throws Exception {
+    void shouldSuccessfullyRunUpdateEndpointForMockUser() throws Exception {
         Long mockId = (long) 1;
         List<UserUpdateData> userUpdateDataList = new ArrayList<>();
         String updatedName = mockUserACreateData.name();
@@ -307,86 +139,11 @@ class UsersControllerTest extends BasicControllerTest {
             String receivedJson = this.userResponseTester.write(response).getJson();
 
             assertEquals(expectedJson, receivedJson);
-
-//            var response = this.mockMvc.perform(put(String.format("/users/%s", mockId))
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .content(this.userUpdateRequestTester.write(userUpdateData).getJson())
-//                    )
-//                    .andExpect(status().isOk())
-//                    .andReturn()
-//                    .getResponse();
         }
     }
 
     @Test
-    void updateUserWithIncorrectName() throws Exception {
-        String nameNumberOfCharactersErrorMessage = "Name must have between 3 and 40 characters.";
-        List<String> mockInvalidNames = new ArrayList<>();
-
-        mockInvalidNames.add("e");
-        mockInvalidNames.add("a".repeat(41));
-
-        for (String invalidName : mockInvalidNames) {
-            this.testRequestWithValidationFieldError(
-                    String.format("/users/%s", 1),
-                    "name",
-                    nameNumberOfCharactersErrorMessage,
-                    "PUT",
-                    userUpdateRequestTester.write(
-                            new UserUpdateData(invalidName, null, null)
-                    ).getJson()
-            );
-        }
-    }
-
-    @Test
-    void updateUserWithIncorrectEmail() throws Exception {
-        List<String> mockInvalidEmails = new ArrayList<>();
-
-        mockInvalidEmails.add(String.format("%s@gmail.com", "a".repeat(400)));
-        mockInvalidEmails.add("testemail.com");
-
-        for (String invalidEmail : mockInvalidEmails) {
-            this.testRequestWithValidationFieldError(
-                    String.format("/users/%s", 1),
-                    "email",
-                    "Email must be in the proper format. Make sure you included @.",
-                    "PUT",
-                    userUpdateRequestTester.write(
-                            new UserUpdateData(null, invalidEmail, null)
-                    ).getJson()
-            );
-        }
-    }
-
-    @Test
-    void updateUserWithIncorrectPassword() throws Exception {
-        List<String> mockInvalidPasswords = new ArrayList<>();
-
-        mockInvalidPasswords.add("Aa123456");
-        mockInvalidPasswords.add("$123456");
-        mockInvalidPasswords.add("$Aabcde");
-        mockInvalidPasswords.add("$AA123456");
-        mockInvalidPasswords.add("$aa123456");
-        mockInvalidPasswords.add("$Aa1");
-        mockInvalidPasswords.add(String.format("$A%s8", "a".repeat(20)));
-
-        for (String invalidPassword : mockInvalidPasswords) {
-            this.testRequestWithValidationFieldError(
-                    String.format("/users/%s", 1),
-                    "password",
-                    "Password must have between 5 and 20 characters and at least one digit, one uppercase letter, one lowercase letter and one special character.",
-                    "PUT",
-                    userUpdateRequestTester.write(
-                            new UserUpdateData(null, null, invalidPassword)
-                    ).getJson()
-            );
-        }
-    }
-
-    // delete
-    @Test
-    void deleteUserTest() {
+    void shouldSuccessfullyRunDeleteEndpointForMockUser() {
         Long mockId = (long) 1;
 
         doNothing().when(this.userService).delete(mockId);
@@ -395,7 +152,7 @@ class UsersControllerTest extends BasicControllerTest {
     }
 
     @Test
-    void deleteNotFoundUserTest() {
+    void shouldThrowNotFoundErrorForDeleteEndpoint() {
         Long mockId = (long) 1;
 
         doThrow(NotFoundException.class).when(this.userService).delete(mockId);
@@ -405,7 +162,7 @@ class UsersControllerTest extends BasicControllerTest {
     }
 
     @Test
-    void activateUserTest() throws IOException {
+    void shouldSuccessfullyRunActivateEndpointForMockUser() throws IOException {
         Long mockId = (long) 1;
         UserActivateAndDeactivatieData expectedUser = new UserActivateAndDeactivatieData(this.mockUserA);
         String expectedJson = this.userActivateAndDeactivateTester.write(expectedUser).getJson();
@@ -419,7 +176,7 @@ class UsersControllerTest extends BasicControllerTest {
     }
 
     @Test
-    void activateAndDeactivateUserNotFoundTest() {
+    void shouldThrowNotFoundErrorForActivateAndDeactivateEndpoints() {
         Long mockId = (long) 1;
 
         doThrow(NotFoundException.class).when(this.userService).activate(mockId);

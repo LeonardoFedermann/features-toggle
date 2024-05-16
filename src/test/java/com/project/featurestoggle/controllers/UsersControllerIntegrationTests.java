@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.featurestoggle.FeaturesToggleApplication;
 import com.project.featurestoggle.data.UserRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,18 +13,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.project.featurestoggle.dtos.*;
 import com.project.featurestoggle.domains.User;
-import com.project.featurestoggle.exceptions.NotFoundException;
-import com.project.featurestoggle.services.UserService;
-import com.project.featurestoggle.utils.Constants;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,12 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UsersControllerIntegrationTests extends BasicControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private UsersController usersController;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -83,8 +70,6 @@ public class UsersControllerIntegrationTests extends BasicControllerTest {
     private User mockUserF = new User(mockUserFCreateData);
     private User mockUserG = new User(mockUserGCreateData);
     private User mockUserH = new User(mockUserHCreateData);
-
-    private List<UserCreateData> usersCreateDataList = new ArrayList<>();
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -136,9 +121,13 @@ public class UsersControllerIntegrationTests extends BasicControllerTest {
 
         this.mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.[1].name").value(this.mockUserB.getName()))
-                .andExpect(jsonPath("$.content[3].email").value(this.mockUserD.getEmail()))
+                .andExpect(jsonPath("$.content.[0].name").value(this.mockUserA.getName()))
+                .andExpect(jsonPath("$.content.[1].email").value(this.mockUserB.getEmail()))
                 .andExpect(jsonPath("$.content[2].isActive").value(true))
+                .andExpect(jsonPath("$.content[2].name").value(this.mockUserC.getName()))
+                .andExpect(jsonPath("$.content[3].email").value(this.mockUserD.getEmail()))
+                .andExpect(jsonPath("$.content[4].name").value(this.mockUserE.getName()))
+                .andExpect(jsonPath("$.content[5].email").value(this.mockUserF.getEmail()))
                 .andExpect(jsonPath("$.content[6].name").value(this.mockUserG.getName()))
                 .andExpect(jsonPath("$.content[7].email").value(this.mockUserH.getEmail()));
     }
@@ -377,5 +366,4 @@ public class UsersControllerIntegrationTests extends BasicControllerTest {
             );
         }
     }
-
 }
