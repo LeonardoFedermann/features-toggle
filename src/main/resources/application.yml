@@ -1,3 +1,7 @@
 server:
   error:
     include-stacktrace: never
+api:
+  security:
+    token:
+      secret: 123456
