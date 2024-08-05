@@ -1,4 +1,4 @@
-package com.project.featurestoggle.controllers.advices;
+package com.project.featurestoggle.infra.advices;
 
 import com.project.featurestoggle.dtos.ValidationErrorData;
 import com.project.featurestoggle.exceptions.NotFoundException;
